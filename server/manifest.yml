@@ -1,11 +1,11 @@
-  applications:
-  - name: dealerreiew
+applications:
+  - name: liams-final-project
     routes:
-      - route: host.domain
+      - route: liams-final-project.eu-gb.mybluemix.net
     memory: 128M
     buildpack: python_buildpack
-  - name: dealerreiew-nginx
+  - name: final-project-nginx
     routes:
-      - route: host.domain/static
+      - route: liams-final-project.eu-gb.mybluemix.net/static
     memory: 128M
     buildpack: staticfile_buildpack
