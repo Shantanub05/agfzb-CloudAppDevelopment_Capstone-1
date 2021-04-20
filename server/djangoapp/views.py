@@ -111,7 +111,7 @@ def get_dealer_details(request, dealer_id):
 # ...
 def add_review(request, dealer_id):
     if request.method == "GET":
-        url = f"https://7d276167.us-south.apigw.appdomain.cloud/api/dealership?dealerId={dealer_id}"
+        url = f"https://service.eu.apiconnect.ibmcloud.com/gws/apigateway/api/a9220b6d6b26f1eb3b657a98770b743616f7d4cd223b89cd1ca4e88ab49bdb92/api/dealership?dealerId={dealer_id}"
         # Get dealers from the URL
         context = {
             "cars": CarModel.objects.all(),

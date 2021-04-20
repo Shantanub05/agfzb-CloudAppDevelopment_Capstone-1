@@ -4,20 +4,21 @@ from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
 
 
+
 # Create a `get_request` to make HTTP GET requests
 # e.g., response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
 #                                     auth=HTTPBasicAuth('apikey', api_key))
-def get_request(url, api_key=None, **kwargs):
+def get_request(url, **kwargs):
     print(kwargs)
-    print(f"GET {url}")
+    print("GET from {} ".format(url))
     try:
-        if api_key:
-            response = requests.get(url, headers={'Content-Type': 'application/json'}, params=kwargs, auth=HTTPBasicAuth('apikey', api_key))
-        else:
-            response = requests.get(url, headers={'Content-Type': 'application/json'}, params=kwargs)
-    except Exception as e:
-        print("ERROR: ", e)
-    print(f"Status Code: {response.status_code}")
+        # Call get method of requests library with URL and parameters
+        response = requests.get(url, headers={'Content-Type': 'application/json'}, params=kwargs)
+    except:
+        # If any error occurs
+        print("Network exception occurred")
+    status_code = response.status_code
+    print("With status {} ".format(status_code))
     json_data = json.loads(response.text)
     return json_data
 
@@ -56,26 +57,26 @@ def get_dealers_from_cf(url, **kwargs):
             results.append(dealer_obj)
     return results
 
-def get_dealer_by_id_from_cf(url, dealer_id):
-    json_result = get_request(url, id=dealer_id)
+# def get_dealer_by_id_from_cf(url, dealer_id):
+#     json_result = get_request(url, id=dealer_id)
 
-    if json_result:
-        dealers = json_result["entries"]
-        for dealer in dealers:
-            dealer_obj = CarDealer(
-                address=dealer_doc["address"],
-                city=dealer_doc["city"],
-                full_name=dealer_doc["full_name"],
-                id=dealer_doc["id"],
-                lat=dealer_doc["lat"],
-                long=dealer_doc["long"],
-                short_name=dealer_doc["short_name"],
-                st=dealer_doc["st"],
-                zip=dealer_doc["zip"],
-            )
-            return dealer_obj
+#     if json_result:
+#         dealers = json_result["entries"]
+#         for dealer in dealers:
+#             dealer_obj = CarDealer(
+#                 address=dealer_doc["address"],
+#                 city=dealer_doc["city"],
+#                 full_name=dealer_doc["full_name"],
+#                 id=dealer_doc["id"],
+#                 lat=dealer_doc["lat"],
+#                 long=dealer_doc["long"],
+#                 short_name=dealer_doc["short_name"],
+#                 st=dealer_doc["st"],
+#                 zip=dealer_doc["zip"],
+#             )
+#             return dealer_obj
 
-    return None
+#     return None
 
 # Create a get_dealer_reviews_from_cf method to get reviews by dealer id from a cloud function
 # def get_dealer_by_id_from_cf(url, dealerId):
@@ -112,15 +113,14 @@ def get_dealer_reviews_from_cf(url, dealerId):
 # - Call get_request() with specified arguments
 # - Get the returned sentiment label such as Positive or Negative
 def analyze_review_sentiments(text):
-    result = "neutral"
+    URL = 'https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/6f34d5dd-7df6-4864-9d79-f2b0afa4aef9'
+    API_KEY = '31DMndrmm1SlqzetENdJyYhTmauNKEVWQ-kVjT4J4l_P'
+    params = json.dumps({"text": text, "features": {"sentiment": {}}})
+    response = requests.post(
+        URL, data=params, headers={'Content-Type': 'application/json'}, auth=HTTPBasicAuth('apikey', API_KEY)
+    )
     try:
-        json_result = get_request(url="https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/6f34d5dd-7df6-4864-9d79-f2b0afa4aef9", 
-                        api_key=os.getenv('NLU_API_KEY'), 
-                        version="2021-03-25",
-                        features="sentiment",
-                        text=urllib.parse.quote_plus(text))
-        result = json_result["sentiment"]["document"]["label"]
-    finally:
-        return result
-
+        return response.json()['sentiment']['document']['label']
+    except KeyError:
+        return 'unknown'
 
