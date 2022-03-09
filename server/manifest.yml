@@ -1,11 +1,11 @@
 applications:
-  - name: liams-final-project
+  - name: djangoapp
     routes:
-      - route: liams-final-project.eu-gb.mybluemix.net
+      - route: bcars4you.eu-gb.cf.appdomain.cloud
     memory: 128M
     buildpack: python_buildpack
-  - name: final-project-nginx
+  - name: djangoapp-nginx
     routes:
-      - route: liams-final-project.eu-gb.mybluemix.net/static
+      - route: bcars4you.eu-gb.cf.appdomain.cloud/static
     memory: 128M
     buildpack: staticfile_buildpack
